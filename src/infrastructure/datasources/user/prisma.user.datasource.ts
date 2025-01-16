@@ -12,13 +12,12 @@ export class UserPrismaDataSourceImpl implements UserDataSource {
     try {
       const prismas = new PrismaClient();
       const users = await prismas.user.findMany();
-      console.log(users);
+
       
       
       return users.map(user => UserMapper.userEntityToResponse(user));
     } catch (error) {
       if (error instanceof CustomError) {
-        console.log('hola ');
         throw error;
       }
       console.log(error);

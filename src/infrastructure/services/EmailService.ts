@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { envs } from "../../config/envs";
 
 
 
@@ -24,8 +25,8 @@ export class EmailService implements EmailService{
             const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                user: 'castaneda.shiina@gmail.com',
-                pass: 'evcfksaupbdkshfy'
+                user: envs.EMAIL_USER,
+                pass: envs.EMAIL_PASS
             }
         }).addListener( 'error',err=> console.log(`nodemailer error: ${err}`))
     

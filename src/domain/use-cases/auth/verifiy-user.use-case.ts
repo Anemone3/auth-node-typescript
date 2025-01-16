@@ -33,7 +33,7 @@ export class VerifyUserOtp {
 
     const token = await this.signToken( {role: role,sub: id}, '3h' );
 
-    //if(!token) throw CustomError.internalServer('Error generating token')
+    if(!token) throw CustomError.internalServer('Error generating token')
 
     if (isVerificated) {
       return {

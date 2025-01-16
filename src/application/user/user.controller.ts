@@ -7,20 +7,15 @@ import { UserEntity } from "../../domain/entities/user-entity";
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  private handleError = (error: unknown, res: Response) => {
-    if (error instanceof CustomError) {
-      return res.status(error.statusCode).json({ error: error.message });
-    }else{
-      return res.status(500).json({ error: "Internal Server Error" });
-    }
-  };
 
-  getUsers = async (req: Request, res: Response): Promise<any> => {
+
+  getUsers = async (req: Request, res: Response,next: NextFunction): Promise<any> => {
     try {
       const users = await this.userService.findAll();
       return res.status(200).json(users);
     } catch (error) {
       //todo: enviar al next de un handleError
+      next(error)
     }
   };
 
@@ -29,6 +24,7 @@ export class UserController {
   //       .then(users => res.json(users))
   //       .catch(error => console.log(error));
   //   }
+
   getUser = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     const { id } = req.params;
     try {
@@ -39,7 +35,7 @@ export class UserController {
     }
   };
 
-  updateUser = async (req: Request, res: Response): Promise<any> => {
+  updateUser = async (req: Request, res: Response,next:NextFunction): Promise<any> => {
     const { id } = req.params;
     const user = req.user as UserEntity;
     
@@ -55,12 +51,12 @@ export class UserController {
       const userUpdate = await this.userService.update(id, updateDto!);
       return res.status(200).json(userUpdate);
     } catch (error) {
-      this.handleError(error, res);
+      next(error);
     }
   };
 
 
-  deleteUser = async (req: Request, res: Response): Promise<any> => {
+  deleteUser = async (req: Request, res: Response,next:NextFunction): Promise<any> => {
     const { id } = req.params;
 
     if(!id) return res.status(400).json({error: "id no encontrada"})
@@ -69,7 +65,7 @@ export class UserController {
       const userDelete = await this.userService.delete(id);
       return res.status(200).json(userDelete);
     } catch (error) {
-      this.handleError(error, res);
+      next(error);
     }
   };
 }

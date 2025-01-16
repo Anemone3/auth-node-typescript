@@ -12,7 +12,7 @@ export class MysqlDatabase{
             console.log('Mysql connected');
         } catch (error) {
             console.log('Mysql connection error');
-            throw error;
+            prismaConnect.$disconnect()
         }
     }
 }

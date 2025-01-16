@@ -1,5 +1,6 @@
 import { createClient } from "redis";
 import { OtpRepository } from "../../domain/repositories/otp.repository";
+import { envs } from "../../config/envs";
 
 
 
@@ -8,7 +9,7 @@ export class OPTService implements OtpRepository {
 
   constructor() {
     const client = createClient({
-      url: 'redis://default:ST2PueJO87YntA67qBs0Hx6EibTejDpV@redis-18035.c329.us-east4-1.gce.redns.redis-cloud.com:18035',
+      url: envs.REDIS_URL,
     })
     client.connect().then((connectedClient) => {
       this.redis = connectedClient;
