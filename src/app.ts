@@ -5,7 +5,7 @@ import morgan from "morgan";
 import cors from "cors";
 import { AppRoutes } from "./application/routes";
 import { errorHandler } from "./config/errorHandler";
-
+import cookieParser from 'cookie-parser'
 MysqlDatabase.connect(prisma);
 
 class ServerBoostrap {
@@ -18,10 +18,14 @@ class ServerBoostrap {
   }
 
   middelewares(): void {
+    this.app.use(cors({
+      origin: true,
+      credentials: true
+    }));
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
+    this.app.use(cookieParser());
     this.app.use(morgan("dev"));
-    this.app.use(cors());
     this.app.use("/api", this.routes());
     this.app.use(errorHandler);
   }

@@ -9,6 +9,6 @@ export const envs = {
     SECRET_KEY: String(process.env.JWT_KEY),
     REDIS_URL: process.env.REDIS_URL,
     EMAIL_USER: process.env.EMAIL_USER,
-    EMAIL_PASS: String(process.env.EMAIL_PASSWORD)
-
+    EMAIL_PASS: String(process.env.EMAIL_PASSWORD),
+    IS_PRODUCTION: process.env.NODE_ENV === 'production'
 }

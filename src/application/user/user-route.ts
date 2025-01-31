@@ -22,7 +22,7 @@ export class UserRoutes {
     router.get("/", controller.getUsers);
     router.get("/:id", controller.getUser);
     router.put("/:id",[AuthMiddleware.validateJWT,AuthMiddleware.verifyOwnership] ,controller.updateUser);
-    router.delete("/:id",[AuthMiddleware.validateJWT,UserMiddleware.verifiyRole([RoleType.ADMIN])], controller.deleteUser)
+    router.delete("/:id",[AuthMiddleware.validateJWT,UserMiddleware.verifiyRole(RoleType.ADMIN)], controller.deleteUser)
 
     
     return router;

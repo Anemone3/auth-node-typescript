@@ -39,10 +39,14 @@ export class AuthRoutes {
     router.post("/login", controller.loginUser);
     router.post("/verify", controller.verificateUserAuth);
     router.get(
-      "/protected",
+      "/verify-token",
       [AuthMiddleware.validateJWT],
       (req: Request, res: Response, next: NextFunction) => {
-        res.json({ message: "Acceso autorizado", user: req.body.user });
+        const user = (req as any).user;
+
+        //todo: manejar el role de manera oculta en toda la aplicacion
+        const {password,role, ...infoUser} = user;
+        res.json({ message: "Acceso autorizado", user: infoUser });
       }
     );
 

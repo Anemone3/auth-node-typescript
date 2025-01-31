@@ -14,24 +14,27 @@ declare global {
     }
   }
 }
-export class AuthMiddleware {
+export class AuthMiddleware  {
   static validateJWT = async (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<any> => {
     try {
-      const authorization = req.header("Authorization");
+      // const authorization = req.header("Authorization");
 
-      if (!authorization)
-        throw CustomError.unathorized(
-          "Unauthorized, Missing header Authorization"
-        );
+      // if (!authorization)
+      //   throw CustomError.unathorized(
+      //     "Unauthorized, Missing header Authorization"
+      //   );
 
-      if (!authorization.startsWith("Bearer "))
-        throw CustomError.unathorized("Unauthorized, Bearer missing ");
+      // if (!authorization.startsWith("Bearer "))
+      //   throw CustomError.unathorized("Unauthorized, Bearer missing ");
 
-      const token = authorization.split(" ").at(1) || "";
+      // const token = authorization.split(" ").at(1) || "";
+      const token = req.cookies.token;
+      if(!token) throw CustomError.unathorized("Unauthorized, No token found");
+      
       const payload = await JwtAdaptar.validateToken<PayloadToken>(token);
 
       if (!payload)

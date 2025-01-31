@@ -6,6 +6,7 @@ import { RegisterUser } from "../../domain/use-cases/auth/register-user.use-case
 import { LoginUserDto } from "../../domain/dto/auth/login-user.dto";
 import { AuthService } from "./auth-service";
 import { AuthToken } from "./auth.interface";
+import { envs } from "../../config/envs";
 
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -76,17 +77,19 @@ export class AuthController {
       if (!otp || !email)
         return res.status(400).json({ error: "Invalid body, service" });
 
-      const result = await this.authService.verifiyUserAndSendToken(
-        email,
-        otp
-      );
+      const result = await this.authService.verifiyUserAndSendToken(email, otp);
 
-      if (result === null)
-        return res.status(400).json({ error: "Wrong code"});
+      if (result === null) return res.status(400).json({ error: "Wrong code" });
+      const { accessToken, ...response } = result;
 
-      res.status(200).json({
-        ...result,
+
+      res.cookie("token", accessToken, {
+        httpOnly: true,
+        secure: envs.IS_PRODUCTION,
+        maxAge: 3 * 60 * 60 * 1000,
       });
+      
+      res.status(200).json(response);
     } catch (error) {
       next(error);
     }
