@@ -10,4 +10,5 @@ export interface UserDataSource{
         createUser(user: CreateUserDto): Promise<UserEntity>
         updateUser(id:string,userUpdate: UpdateUserDto): Promise<UserEntity>
         deleteUser(id: string): Promise<UserEntity>
+        getUserByEmail(email: string): Promise<UserEntity>
 }

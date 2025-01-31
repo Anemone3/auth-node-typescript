@@ -43,13 +43,14 @@ export class RegisterUser extends AuthBase implements RegisterUserUseCase {
     await this.generateAndSendOTP(user.email);
 
     return {
-      verifiyOtp: "pending",
+      message:'Código enviado, revisa el correo',
+      authenticate: "pending",
       user: {
         id: user.id,
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,
-        profile: user.img!,
+        profile: user.profile!,
         role: user.role,
       },
     };

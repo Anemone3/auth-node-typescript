@@ -14,10 +14,10 @@ export class UserRoutes {
     const datasource = new UserPrismaDataSourceImpl();
     const authRepository = new UserRepositoryImpl(datasource);
     //console.log(authRepository);
-    const service = new UserService(authRepository);
+    const userService = new UserService(authRepository);
     //console.log(service);
 
-    const controller = new UserController(service);
+    const controller = new UserController(userService);
 
     router.get("/", controller.getUsers);
     router.get("/:id", controller.getUser);

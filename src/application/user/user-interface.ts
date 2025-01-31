@@ -4,7 +4,7 @@ export interface UserResponse {
   lastname: string;
   email: string;
   profile: string;
-  role: string[];
+  role: string;
   createdAt: Date;
   updatedAt: Date;
 }

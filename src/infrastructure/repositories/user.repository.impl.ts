@@ -26,4 +26,8 @@ export class UserRepositoryImpl implements UserRepository{
     deleteUser(id: string): Promise<UserEntity> {
         return this.userDataSource.deleteUser(id);
     }
+
+    getUserByEmail(email: string): Promise<UserEntity> {
+        return this.userDataSource.getUserByEmail(email);
+    }
 }

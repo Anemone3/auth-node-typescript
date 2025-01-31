@@ -10,7 +10,7 @@ MysqlDatabase.connect(prisma);
 
 class ServerBoostrap {
   private readonly app: express.Application = express();
-  private readonly port: number = Number(envs.PORT) || 4000;
+  private readonly port: number = Number(envs.PORT) || 3000;
 
   constructor() {
     this.middelewares();

@@ -13,9 +13,7 @@ export class UserPrismaDataSourceImpl implements UserDataSource {
       const prismas = new PrismaClient();
       const users = await prismas.user.findMany();
 
-      
-      
-      return users.map(user => UserMapper.userEntityToResponse(user));
+      return users.map((user) => UserMapper.userEntityToResponse(user));
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
@@ -60,19 +58,17 @@ export class UserPrismaDataSourceImpl implements UserDataSource {
     }
   }
   async updateUser(id: string, updateUser: UpdateUserDto): Promise<UserEntity> {
-
     try {
       const exists = await prisma.user.findUnique({ where: { id: id } });
 
       if (!exists) throw CustomError.notFound("User not found");
-    
+
       const user = await prisma.user.update({
         where: { id: id },
-        data: { ...updateUser, updatedAt: new Date()},
+        data: { ...updateUser, updatedAt: new Date() },
       });
 
       return UserMapper.userEntityToResponse(user);
-
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;
@@ -85,10 +81,27 @@ export class UserPrismaDataSourceImpl implements UserDataSource {
       const exists = await prisma.user.findUnique({ where: { id: id } });
 
       if (!exists) throw CustomError.notFound("User not found");
-    
-      const userDelete = await prisma.user.delete({where:{id: id}})
+
+      const userDelete = await prisma.user.delete({ where: { id: id } });
 
       return UserMapper.userEntityFromDto(userDelete);
+    } catch (error) {
+      if (error instanceof CustomError) {
+        throw error;
+      }
+      throw CustomError.internalServer();
+    }
+  }
+  async getUserByEmail(email: string): Promise<UserEntity> {
+    try {
+      const exists = await prisma.user.findUnique({ where: { email: email } });
+
+      
+      if (!exists) throw CustomError.notFound("User not found");
+
+      
+      
+      return UserMapper.userEntityToResponse(exists);
     } catch (error) {
       if (error instanceof CustomError) {
         throw error;

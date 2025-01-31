@@ -6,6 +6,7 @@ import { CustomError } from "../../domain/errors/custom.error";
 import { AuthRepository } from "../../domain/repositories/auth.repository";
 import { EmailRepository } from "../../domain/repositories/email.repository";
 import { OtpRepository } from "../../domain/repositories/otp.repository";
+import { UserRepository } from "../../domain/repositories/user.repository";
 import { LoginUser } from "../../domain/use-cases/auth/login-user.use-case";
 import { RegisterUser } from "../../domain/use-cases/auth/register-user.use-case";
 import { VerifyUserOtp } from "../../domain/use-cases/auth/verifiy-user.use-case";
@@ -20,11 +21,12 @@ export class AuthService{
     
     constructor(
         private readonly authRepository: AuthRepository,
-        private readonly otpRepository: OtpRepository
+        private readonly otpRepository: OtpRepository,
+        private readonly userRepository: UserRepository
     ){
         this.loginUser = new LoginUser(this.authRepository,this.otpRepository); 
         this.registerUser = new RegisterUser(this.authRepository,this.otpRepository);
-        this.verifyUser = new VerifyUserOtp(this.otpRepository);
+        this.verifyUser = new VerifyUserOtp(this.otpRepository,this.userRepository);
     }
 
 
@@ -38,12 +40,12 @@ export class AuthService{
   }
 
 
-  async verifiyUserAndSendToken(email: string,otp:string, id:string, role:RoleType[]): Promise<AuthToken>{
+  async verifiyUserAndSendToken(email: string,otp:string): Promise<AuthToken | null>{
 
     if(otp.length < 1){
-      throw CustomError.badRequest(`Otp is missing: ${otp}`)
+      throw CustomError.badRequest(`Otp is missing`)
     }
     
-    return this.verifyUser.execute(email , otp,id,role);
+    return this.verifyUser.execute(email , otp);
   }
 }

@@ -4,8 +4,7 @@ import { PayloadToken } from "../../dto/auth/payload-token";
 import { RoleType } from "../../entities/user-entity";
 import { CustomError } from "../../errors/custom.error";
 import { OtpRepository } from "../../repositories/otp.repository";
-
-type VerifyUser = Pick<AuthToken, "accessToken" | "verifiyOtp">;
+import { UserRepository } from "../../repositories/user.repository";
 
 type SignToken = (
   payload: PayloadToken,
@@ -15,42 +14,46 @@ type SignToken = (
 export class VerifyUserOtp {
   constructor(
     private readonly otpRepository: OtpRepository,
-    private readonly signToken: SignToken = JwtAdaptar.generateToken 
+    private readonly useRepository: UserRepository,
+    private readonly signToken: SignToken = JwtAdaptar.generateToken
   ) {}
 
-  async execute(email:string, otp: string, id:string, role:RoleType[]): Promise<any> {
-
-
-    
+  async execute(
+    email: string,
+    otp: string
+  ): Promise<AuthToken | null> {
     try {
-      console.log('trycatch email y otp:', email , otp);
-      
+
       const isVerificated = await this.otpRepository.verifyOtp(email, otp);
 
-    console.log('verificando otp:', isVerificated);
-    
 
 
-    const token = await this.signToken( {role: role,sub: id}, '3h' );
+      if (!isVerificated) throw CustomError.badRequest("Invalid OTP");
+      
 
-    if(!token) throw CustomError.internalServer('Error generating token')
-
-    if (isVerificated) {
-      return {
-        message: 'User verified successfully',
-        verifiyOtp: "completed",
-        accessToken: token,
-      }
-
-    } else {
-      return{
-        message: 'Wrong code OTP, retry to send',
-        verifiyOtp: "pending",
+       const user = await this.useRepository.getUserByEmail(email);
+        console.log(user);
         
-      }
-    }
+        const token = await this.signToken({ role: user.role, sub: user.id }, "3h");
+
+        if (!token) throw CustomError.internalServer("Error generating token");
+        return {
+          message: "User verified successfully",
+          accessToken: token,
+          authenticate: "completed",
+          user: {
+            id: user.id,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.email,
+            profile: user.profile!,
+            role: user.role,
+            createdAt: user.createdAt!,
+            updatedAt: user.updatedAt!,
+          },
+        };
     } catch (error) {
-        throw CustomError.internalServer(`${error}`);
+      throw error
     }
   }
 }

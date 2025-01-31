@@ -12,7 +12,7 @@ export class UserMiddleware extends AuthMiddleware {
     ): Promise<any> => {
       try {
         const userRoles = req.user?.role;
-        console.log('que rol llega aca xd', userRoles);
+        console.log('que rol user', userRoles);
         
         if (!userRoles) throw CustomError.notFound("Rol no encontrado");
 

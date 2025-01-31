@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,20 +7,111 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model cart {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  product   product  @relation(fields: [productId], references: [id], map: "Cart_productId_fkey")
+  user      user     @relation(fields: [userId], references: [id], map: "Cart_userId_fkey")
 
-model User {
-  id        String   @id @default(uuid()) 
-  firstname String        
-  lastname  String    
-  email     String   @unique              
-  password  String        
-  img       String   @default("https://i.pinimg.com/736x/96/83/aa/9683aaa7b396888f2f7a6df3197d2374.jpg")
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())   
-  updatedAt DateTime @default(now())   
+  @@index([productId], map: "Cart_productId_fkey")
+  @@index([userId], map: "Cart_userId_fkey")
 }
 
-enum Role {
+model category {
+  id              Int               @id @default(autoincrement())
+  name            String
+  productcategory productcategory[]
+}
+
+model customer {
+  id           Int      @id @default(autoincrement())
+  address      String
+  phone        String
+  departamento String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now())
+  userId       String   @unique(map: "Customer_userId_key")
+  user         user     @relation(fields: [userId], references: [id], map: "Customer_userId_fkey")
+  order        order[]
+}
+
+model order {
+  id            Int           @id @default(autoincrement())
+  customerId    Int
+  methodPayment String
+  total         Decimal
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now())
+  customer      customer      @relation(fields: [customerId], references: [id], map: "Order_customerId_fkey")
+  payment       payment       @relation(fields: [methodPayment], references: [id], map: "Order_methodPayment_fkey")
+  orderdetail   orderdetail[]
+
+  @@index([customerId], map: "Order_customerId_fkey")
+  @@index([methodPayment], map: "Order_methodPayment_fkey")
+}
+
+model orderdetail {
+  id          Int      @id @default(autoincrement())
+  orderId     Int
+  productId   String
+  description String
+  quantity    Int
+  price       Decimal
+  discount    Decimal? @default(0.00) @db.Decimal(10, 2)
+  total       Decimal  @db.Decimal(10, 2)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  order       order    @relation(fields: [orderId], references: [id], map: "OrderDetail_orderId_fkey")
+  product     product  @relation(fields: [productId], references: [id], map: "OrderDetail_productId_fkey")
+
+  @@index([orderId], map: "OrderDetail_orderId_fkey")
+  @@index([productId], map: "OrderDetail_productId_fkey")
+}
+
+model payment {
+  id      String  @id
+  payment String
+  order   order[]
+}
+
+model product {
+  id              String            @id
+  name            String
+  price           Decimal
+  stock           Int
+  cart            cart[]
+  orderdetail     orderdetail[]
+  productcategory productcategory[]
+}
+
+model productcategory {
+  productId  String
+  categoryId Int
+  category   category @relation(fields: [categoryId], references: [id], map: "ProductCategory_categoryId_fkey")
+  product    product  @relation(fields: [productId], references: [id], map: "ProductCategory_productId_fkey")
+
+  @@id([productId, categoryId])
+  @@index([categoryId], map: "ProductCategory_categoryId_fkey")
+}
+
+model user {
+  id        String    @id @default(uuid())
+  firstname String
+  lastname  String
+  email     String    @unique(map: "User_email_key")
+  password  String
+  profile   String    @default("https://i.pinimg.com/736x/96/83/aa/9683aaa7b396888f2f7a6df3197d2374.jpg")
+  role      user_role @default(USER)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  cart      cart[]
+  customer  customer?
+}
+
+enum user_role {
   ADMIN
   USER
   CUSTOMER

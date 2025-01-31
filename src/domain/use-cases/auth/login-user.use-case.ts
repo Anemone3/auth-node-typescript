@@ -37,13 +37,14 @@ export class LoginUser extends AuthBase implements LoginUserUseCase{
 
 
         return{
-            verifiyOtp: 'pending',
+            message:'Código enviado, revisa el correo',
+            authenticate: 'pending',
             user: {
                 id: user.id,
                 firstname: user.firstname,
                 lastname: user.lastname,
                 email: user.email,
-                profile: user.img!,
+                profile: user.profile!,
                 role: user.role
             }
         }
