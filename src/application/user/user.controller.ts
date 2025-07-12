@@ -9,7 +9,8 @@ export class UserController {
 
 
 
-  getUsers = async (req: Request, res: Response,next: NextFunction): Promise<any> => {
+  getUsers = async (req: Request, res: Response, next: NextFunction): Promise<Response> => {
+
     try {
       const users = await this.userService.findAll();
       return res.status(200).json(users);
@@ -42,9 +43,9 @@ export class UserController {
     if (id !== user.id) {
       return res.status(401).json({ error: "id no encontrada" });
     }
-    const [error,updateDto] = await UpdateUserDto.create(req.body);
+    const [error, updateDto] = await UpdateUserDto.create(req.body);
+    if (error) throw CustomError.badRequest(error);
 
-    if(error) return res.status(400).json({error});
 
     try {
 
