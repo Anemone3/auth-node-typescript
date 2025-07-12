@@ -40,9 +40,16 @@ export class AuthService{
   }
 
 
-  async verifiyUserAndSendToken(email: string,otp:string): Promise<AuthToken | null>{
+async verifyUserAndSendToken(email: string, otp: string): Promise<AuthToken | null> {
 
-    if(otp.length < 1){
+  if (!email || !email.includes("@")) {
+  throw CustomError.badRequest("Email inválido");
+}
+
+
+
+  if (!otp || otp.trim().length === 0) {
+
       throw CustomError.badRequest(`Otp is missing`)
     }
     
